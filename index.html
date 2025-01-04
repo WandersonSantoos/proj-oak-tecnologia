@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro e Listagem de Produtos</title>
+
+    <!--====================== Unicons ====================-->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v3.0.6/css/line.css">
+
+    <style>
+
+        /*========== Google Fontes ==========*/
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+        :root {
+            /* Escolha sua cor favorita */
+            --hue-color: 230;
+
+            /*========== HSL modos de cor ==========*/
+            --first-color: hsl(var(--hue-color), 69%, 61%);
+            --first-color-second: hsl(var(--hue-color), 69%, 61%);
+            --first-color-alt: hsl(var(--hue-color), 57%, 53%);
+            --first-color-lighter: hsl(var(--hue-color), 92%, 85%);
+            --title-color: hsl(var(--hue-color), 8%, 15%);
+            --text-color: hsl(var(--hue-color), 8%, 45%);
+            --text-color-light: hsl(var(--hue-color), 8%, 65%);
+            --input-color: hsl(var(--hue-color), 70%, 96%);
+            --body-color: hsl(var(--hue-color), 60%, 99%);
+            --container-color: #FFF;
+            --scroll-bar-color: hsl(var(--hue-color), 12%, 90%);
+            --scroll-thumb-color: hsl(var(--hue-color), 12%, 80%);
+
+            --body-font: 'Poppins', sans-serif;
+        }
+
+        body {
+            font-family: var(--body-font);
+            margin: 0;
+            padding: 0;
+            background-color: var(--body-color);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: var(--container-color);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--title-color);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        input, select {
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+            color: white;
+            background-color: var(--first-color);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: var(--first-color-alt);
+        }
+
+        .btn-list {
+            color: black;
+            background-color: #F6D000;
+            margin: 20px auto;
+        }
+
+        .btn-list:hover {
+            background-color: #f6d100c2;
+        }
+
+        #new-product-button {
+            margin: 10px;
+            background-color: #80DE09;
+            color: var(--title-color);
+            font-weight: bold;
+        }
+
+        #new-product-button:hover {
+            background-color: #A0E34D;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--first-color);
+            color: white;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .responsive {
+            overflow-x: auto;
+        }
+
+        footer {
+            background-color: var(--first-color);
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .footer-icons a {
+            margin: 0 10px;
+            color: white;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .footer-icons a:hover {
+            color: var(--first-color-lighter);
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="form-section">
+        <h1>Cadastro de Produtos</h1>
+
+        <form id="product-form">
+            <label for="product-name">Nome do Produto:</label>
+            <input type="text" id="product-name" required>
+
+            <label for="product-description">Descrição do Produto:</label>
+            <input type="text" id="product-description" required>
+
+            <label for="product-price">Valor do Produto:</label>
+            <input type="number" id="product-price" step="0.01" required>
+
+            <label for="product-available">Disponível para Venda:</label>
+            <select id="product-available" required>
+                <option value="sim">Sim</option>
+                <option value="não">Não</option>
+            </select>
+
+            <button type="submit">Salvar Produto</button>
+        </form>
+
+        <button class="btn-list" id="go-to-list">Ir para Lista de Produtos</button>
+    </div>
+
+    <div class="container" id="list-section" style="display: none;">
+        <h2>Lista de Produtos</h2>
+        <div class="search">
+            <input type="text" id="search" placeholder="Pesquisar por nome...">
+            <button id="export-csv-button">Exportar CSV</button>
+        </div>
+        <div class="responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Descrição</th>
+                        <th>Valor</th>
+                        <th>Disponível</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="product-list">
+                    <!-- Produtos serão adicionados aqui -->
+                </tbody>
+            </table>
+        </div>
+        <button id="new-product-button">Cadastrar Novo Produto</button>
+    </div>
+
+    <footer>
+        <div class="footer-icons">
+            <a href="https://www.linkedin.com/in/wandersonsantoos/" target="_blank"><i class="uil uil-linkedin-alt"></i></a>
+            <a href="https://github.com/WandersonSantoos" target="_blank"><i class="uil uil-github-alt"></i></a>
+            <a href="https://wandersonsantoos.github.io/wand-portf/" target="_blank"><i class="uil uil-globe"></i></a>
+        </div>
+        <p>&copy; 2025 - Desenvolvido por Wanderson Santos</p>
+    </footer>
+
+    <script>
+        const productForm = document.getElementById('product-form');
+        const productList = document.getElementById('product-list');
+        const formSection = document.getElementById('form-section');
+        const listSection = document.getElementById('list-section');
+        const newProductButton = document.getElementById('new-product-button');
+        const searchInput = document.getElementById('search');
+        const exportCsvButton = document.getElementById('export-csv-button');
+        const importCsvButton = document.getElementById('import-csv-button');
+        const importCsvFile = document.getElementById('import-csv-file');
+        const goToListButton = document.getElementById('go-to-list');
+    
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+    
+        function saveToLocalStorage() {
+            localStorage.setItem('products', JSON.stringify(products));
+        }
+    
+        goToListButton.addEventListener('click', () => {
+            formSection.style.display = 'none';
+            listSection.style.display = 'block';
+            updateProductList();
+        });
+    
+        productForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+    
+            const name = document.getElementById('product-name').value;
+            const description = document.getElementById('product-description').value;
+            const price = parseFloat(document.getElementById('product-price').value);
+            const available = document.getElementById('product-available').value;
+    
+            const productIndex = products.findIndex(p => p.editing);
+            if (productIndex >= 0) {
+                products[productIndex] = { name, description, price, available, action: "Editado" };
+                delete products[productIndex].editing;
+            } else {
+                products.push({ name, description, price, available, action: "Cadastrado" });
+            }
+    
+            products.sort((a, b) => a.price - b.price);
+            saveToLocalStorage();
+            updateProductList();
+    
+            formSection.style.display = 'none';
+            listSection.style.display = 'block';
+            productForm.reset();
+        });
+    
+        newProductButton.addEventListener('click', () => {
+            formSection.style.display = 'block';
+            listSection.style.display = 'none';
+            productForm.reset();
+        });
+    
+        searchInput.addEventListener('input', () => {
+            updateProductList();
+        });
+    
+        exportCsvButton.addEventListener('click', () => {
+            const csvContent = [
+                "\ufeffNome;Descrição;Valor;Disponível;Ação" // Incluindo BOM e ajustando delimitador para ponto e vírgula
+            ].concat(products.map(product =>
+                `${product.name};${product.description};${product.price};${product.available};${product.action}`
+            )).join("\n");
+    
+            const dataStr = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "produtos.csv");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        });
+    
+        importCsvButton.addEventListener('click', () => {
+            importCsvFile.click();
+        });
+    
+        importCsvFile.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const csvContent = e.target.result.split("\n").slice(1); // Ignorar cabeçalho
+                    products = csvContent.map(row => {
+                        const [name, description, price, available, action] = row.split(";");
+                        return { 
+                            name: name?.trim(), 
+                            description: description?.trim(), 
+                            price: parseFloat(price?.trim()), 
+                            available: available?.trim(), 
+                            action: action?.trim() 
+                        };
+                    }).filter(product => product.name); // Filtrar linhas vazias ou incompletas
+                    saveToLocalStorage();
+                    updateProductList();
+                };
+                reader.readAsText(file, "UTF-8");
+            }
+        });
+    
+        function updateProductList() {
+            productList.innerHTML = '';
+    
+            const filteredProducts = products.filter(product =>
+                product.name.toLowerCase().includes(searchInput.value.toLowerCase())
+            );
+    
+            filteredProducts.forEach((product, index) => {
+                const row = document.createElement('tr');
+    
+                row.innerHTML = `
+                    <td>${product.name}</td>
+                    <td>${product.description}</td>
+                    <td>${product.price.toFixed(2)}</td>
+                    <td>${product.available}</td>
+                    <td>
+                        <div class="actions">
+                            <button onclick="editProduct(${index})">
+                                <i class="uil uil-edit"></i> Editar
+                            </button>
+                            <button onclick="deleteProduct(${index})">
+                                <i class="uil uil-trash-alt"></i> Excluir
+                            </button>
+                        </div>
+                    </td>
+                `;
+    
+                productList.appendChild(row);
+            });
+        }
+    
+        function editProduct(index) {
+            const product = products[index];
+            product.editing = true;
+    
+            document.getElementById('product-name').value = product.name;
+            document.getElementById('product-description').value = product.description;
+            document.getElementById('product-price').value = product.price;
+            document.getElementById('product-available').value = product.available;
+    
+            formSection.style.display = 'block';
+            listSection.style.display = 'none';
+        }
+    
+        function deleteProduct(index) {
+            if (confirm('Tem certeza que deseja excluir este produto?')) {
+                products[index].action = "Excluído"; // Marca como excluído antes de remover
+                products.splice(index, 1);
+                saveToLocalStorage();
+                updateProductList();
+            }
+        }
+    
+        // Inicializar a lista de produtos
+        updateProductList();
+    </script>
+</body>
+</html>
